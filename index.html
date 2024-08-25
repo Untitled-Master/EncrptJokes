@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypt and Decrypt Text</title>
+</head>
+<body>
+    <h2>Text Encryption and Decryption</h2>
+    
+    <label for="textInput">Enter Text:</label><br>
+    <textarea id="textInput" rows="4" cols="50"></textarea><br><br>
+
+    <button onclick="encryptText()">Encrypt</button>
+    <button onclick="decryptText()">Decrypt</button>
+    <button onclick="copyText()">Copy Text</button>
+
+    <h3>Output:</h3>
+    <textarea id="output" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        function encryptText() {
+            const text = document.getElementById("textInput").value;
+            document.getElementById("output").value = customCipher(text, 1); // Encrypt with shift +1
+        }
+
+        function decryptText() {
+            const text = document.getElementById("textInput").value;
+            document.getElementById("output").value = customCipher(text, -1); // Decrypt with shift -1
+        }
+
+        function copyText() {
+            const outputText = document.getElementById("output");
+            outputText.select();
+            outputText.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+            alert("Text copied to clipboard!");
+        }
+
+        function customCipher(text, shift) {
+            return text.split('').map(char => {
+                const code = char.charCodeAt(0);
+
+                // Shift Arabic characters (Unicode range: 0x0600 - 0x06FF)
+                if (code >= 0x0600 && code <= 0x06FF) {
+                    return String.fromCharCode(((code - 0x0600 + shift) % 256) + 0x0600);
+                }
+
+                // Shift Latin characters (Unicode range: 0x0041 - 0x007A)
+                if ((code >= 0x0041 && code <= 0x005A) || (code >= 0x0061 && code <= 0x007A)) {
+                    const base = (code >= 0x0041 && code <= 0x005A) ? 0x0041 : 0x0061;
+                    return String.fromCharCode(((code - base + shift) % 26) + base);
+                }
+
+                // Leave other characters unchanged
+                return char;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
